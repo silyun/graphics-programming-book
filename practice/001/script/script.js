@@ -30,6 +30,11 @@
    * @type {Image}
    */
   let image = null;
+  /**
+   * 実行開始時のタイムスタンプ
+   * @type {number}
+   */
+  let startTime = null;
 
   /**
    * ページのロードが完了したときに発火する load イベント
@@ -50,6 +55,8 @@
         image = loadedImage;
         // 初期化処理を行う
         initialize();
+        // 実行開始時のタイムスタンプを取得する
+        startTime = Date.now();
         // 描画処理を行う
         render();
       });
@@ -72,8 +79,18 @@
   function render() {
     // 描画前に画面全体を不透明な明るいグレーで塗りつぶす
     util.drawRect(0, 0, canvas.width, canvas.height, '#eeeeee');
+
+    // 現在までの経過時間を取得する
+    let nowTime = (Date.now() - startTime) / 1000;
+
+    // nowTimeをラジアンに見立ててsinに与えることで-1~1の往復する値を取得できる
+    let s = Math.sin(nowTime);
+    let x = s * 100;
+
     // 画像を描画する
-    ctx.drawImage(image, 100, 100);
+    ctx.drawImage(image, CANVAS_WIDTH / 2 + x, CANVAS_HEIGHT / 2);
+
+    requestAnimationFrame(render);
   }
 
   /**
