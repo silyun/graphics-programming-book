@@ -4,6 +4,7 @@
    * @type {number}
    */
   const CANVAS_WIDTH = 640;
+
   /**
    * canvas の高さ
    * @type {number}
@@ -15,26 +16,42 @@
    * @type {Canvas2DUtility}
    */
   let util = null;
+
   /**
    * 描画対象となる Canvas Element
    * @type {HTMLCanvasElement}
    */
   let canvas = null;
+
   /**
    * Canvas2D API のコンテキスト
    * @type {CanvasRenderingContext2D}
    */
   let ctx = null;
+
   /**
    * イメージのインスタンス
    * @type {Image}
    */
   let image = null;
+
   /**
    * 実行開始時のタイムスタンプ
    * @type {number}
    */
   let startTime = null;
+
+  /**
+   * 自機が登場中かどうかを判定するフラグ
+   * @type {boolean}
+   */
+  let isComing = false;
+
+  /**
+   * 登場演出を開始した際のタイムスタンプ
+   * @type {number}
+   */
+  let comingStart = null;
 
   // 自機の座標（初期値はcanvasの中心）
   let viperX = CANVAS_WIDTH / 2;
@@ -99,21 +116,45 @@
     // canvas の大きさを設定
     canvas.width = CANVAS_WIDTH;
     canvas.height = CANVAS_HEIGHT;
+    // 登場シーンからスタートするための設定
+    isComing = true;
+    comingStart = Date.now();
+    viperY = CANVAS_HEIGHT;
   }
 
   /**
    * 描画処理を行う
    */
   function render() {
+    // グローバルなアルファを必ず1.0で描画処理を開始する
+    ctx.globalAlpha = 1.0;
     // 描画前に画面全体を不透明な明るいグレーで塗りつぶす
     util.drawRect(0, 0, canvas.width, canvas.height, '#eeeeee');
 
     // 現在までの経過時間を取得する
     let nowTime = (Date.now() - startTime) / 1000;
 
+    // 登場シーンの処理
+    if (isComing === true) {
+      // 登場シーンが始まってからの開始時間
+      let justTime = Date.now();
+      let comingTime = (justTime - comingStart) / 1000;
+      // 登場中は時間がたつほど上に向かて進む
+      viperY = CANVAS_HEIGHT - comingTime * 50;
+      // 一定の位置まで経過したら登場シーンを終了する
+      if (viperY <= CANVAS_HEIGHT - 100) {
+        isComing = false;
+        viperY = CANVAS_HEIGHT - 100; // 行き過ぎの可能性もあるので位置を再設定
+      }
+      // justTimeを100で割ったときの余りが50より小さくなる場合だけ半透明にする
+      if (justTime % 100 < 50) {
+        ctx.globalAlpha = 0.5;
+      }
+    }
+
     // nowTimeをラジアンに見立ててsinに与えることで-1~1の往復する値を取得できる
-    let s = Math.sin(nowTime);
-    let x = s * 100;
+    // let s = Math.sin(nowTime);
+    // let x = s * 100;
 
     // 画像を描画する
     ctx.drawImage(image, viperX, viperY);
