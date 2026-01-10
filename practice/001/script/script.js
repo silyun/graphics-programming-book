@@ -36,6 +36,32 @@
    */
   let startTime = null;
 
+  // 自機の座標（初期値はcanvasの中心）
+  let viperX = CANVAS_WIDTH / 2;
+  let viperY = CANVAS_HEIGHT / 2;
+
+  /**
+   * イベントを設定する
+   */
+  function eventSetting() {
+    window.addEventListener('keydown', (event) => {
+      switch (event.key) {
+        case 'ArrowLeft':
+          viperX -= 10;
+          break;
+        case 'ArrowRight':
+          viperX += 10;
+          break;
+        case 'ArrowUp':
+          viperY -= 10;
+          break;
+        case 'ArrowDown':
+          viperY += 10;
+          break;
+      }
+    });
+  }
+
   /**
    * ページのロードが完了したときに発火する load イベント
    */
@@ -55,6 +81,8 @@
         image = loadedImage;
         // 初期化処理を行う
         initialize();
+        // イベントの設定する
+        eventSetting();
         // 実行開始時のタイムスタンプを取得する
         startTime = Date.now();
         // 描画処理を行う
@@ -88,8 +116,9 @@
     let x = s * 100;
 
     // 画像を描画する
-    ctx.drawImage(image, CANVAS_WIDTH / 2 + x, CANVAS_HEIGHT / 2);
+    ctx.drawImage(image, viperX, viperY);
 
+    // console.log(nowTime);
     requestAnimationFrame(render);
   }
 
