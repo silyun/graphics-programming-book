@@ -45,10 +45,12 @@ class Character {
    * @param {CanvasRenderingContext2D} ctx - 描画などに利用する 2D コンテキスト
    * @param {number} x - X 座標
    * @param {number} y - Y 座標
+   * @param {number} w - 幅
+   * @param {number} h - 高さ
    * @param {number} life - キャラクターのライフ（生存フラグを兼ねる）
    * @param {Image} image - キャラクターの画像
    */
-  constructor(ctx, x, y, life, image) {
+  constructor(ctx, x, y, w, h, life, image) {
     /**
      * @type {CanvasRenderingContext2D}
      */
@@ -68,13 +70,26 @@ class Character {
      * @type {Image}
      */
     this.image = image;
+
+    /**
+     * @type {number}
+     */
+    this.width = w;
+
+    /**
+     * @type {number}
+     */
+    this.height = h;
   }
 
   /**
    * キャラクターを描画する
    */
   draw() {
-    this.ctx.drawImage(this.image, this.position.x, this.position.y);
+    // キャラクターのサイズを考慮してオフセットする量
+    let offsetX = this.width / 2;
+    let offsetY = this.height / 2;
+    this.ctx.drawImage(this.image, this.position.x - offsetX, this.position.y - offsetY, this.width, this.height);
   }
 }
 
@@ -87,13 +102,15 @@ class Viper extends Character {
    * @param {CanvasRenderingContext2D} ctx - 描画などに利用する 2D コンテキスト
    * @param {number} x - X 座標
    * @param {number} y - Y 座標
+   * @param {number} w - 幅
+   * @param {number} h - 高さ
    * @param {Image} image - キャラクターの画像
    */
-  constructor(ctx, x, y, image) {
+  constructor(ctx, x, y, w, h, image) {
     // Character クラスを継承しているので、まずは継承元となる
     // Character クラスのコンストラクタを呼び出すことで初期化する
     // （super が継承元のコンストラクタの呼び出しに相当する）
-    super(ctx, x, y, 0, image);
+    super(ctx, x, y, w, h, 0, image);
 
     /**
      * viper が登場中かどうかを表すフラグ
