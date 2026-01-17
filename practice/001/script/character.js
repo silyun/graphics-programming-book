@@ -113,6 +113,12 @@ class Viper extends Character {
     super(ctx, x, y, w, h, 0, image);
 
     /**
+     * 自身のスピード（update一回当たりの移動量）
+     * @type {number}
+     */
+    this.speed = 3;
+
+    /**
      * viper が登場中かどうかを表すフラグ
      * @type {boolean}
      */
@@ -184,6 +190,11 @@ class Viper extends Character {
       if (justTime % 100 < 50) {
         this.ctx.globalAlpha = 0.5;
       }
+    } else {
+      if (window.isKeyDown.key_ArrowLeft) this.position.x -= this.speed; // アローキーの左
+      if (window.isKeyDown.key_ArrowRight) this.position.x += this.speed; // アローキーの右
+      if (window.isKeyDown.key_ArrowUp) this.position.y -= this.speed; // アローキーの上
+      if (window.isKeyDown.key_ArrowDown) this.position.y += this.speed; // アローキーの下
     }
 
     // 自機キャラクターを描画する

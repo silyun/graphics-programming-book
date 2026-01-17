@@ -48,28 +48,51 @@
   let startTime = null;
 
   /**
+   * キーの押下状態を調べるためのオブジェクト
+   * @global
+   * @type {object}
+   */
+  window.isKeyDown = {};
+
+  /**
    * イベントを設定する
    */
   function eventSetting() {
-    window.addEventListener('keydown', (event) => {
-      // 自機が登場シーン中なら何もしないで終了する
-      if (viper.isComing) return;
-      // 入力されたキーに応じて処理内容を変化させる
-      switch (event.key) {
-        case 'ArrowLeft':
-          viper.position.x -= 10;
-          break;
-        case 'ArrowRight':
-          viper.position.x += 10;
-          break;
-        case 'ArrowUp':
-          viper.position.y -= 10;
-          break;
-        case 'ArrowDown':
-          viper.position.y += 10;
-          break;
-      }
-    });
+    window.addEventListener(
+      'keydown',
+      (event) => {
+        isKeyDown[`key_${event.key}`] = true;
+      },
+      false
+    );
+
+    window.addEventListener(
+      'keyup',
+      (event) => {
+        isKeyDown[`key_${event.key}`] = false;
+      },
+      false
+    );
+
+    // window.addEventListener('keydown', (event) => {
+    //   // 自機が登場シーン中なら何もしないで終了する
+    //   if (viper.isComing) return;
+    //   // 入力されたキーに応じて処理内容を変化させる
+    //   switch (event.key) {
+    //     case 'ArrowLeft':
+    //       viper.position.x -= 10;
+    //       break;
+    //     case 'ArrowRight':
+    //       viper.position.x += 10;
+    //       break;
+    //     case 'ArrowUp':
+    //       viper.position.y -= 10;
+    //       break;
+    //     case 'ArrowDown':
+    //       viper.position.y += 10;
+    //       break;
+    //   }
+    // });
   }
 
   /**
