@@ -108,6 +108,12 @@ class Viper extends Character {
     this.comingStart = null;
 
     /**
+     * 登場演出を開始する座標
+     * @type {Position}
+     */
+    this.comingStartPosition = null;
+
+    /**
      * 登場演出を完了とする座標
      * @type {Position}
      */
@@ -128,7 +134,45 @@ class Viper extends Character {
     this.comingStart = Date.now();
     // 登場開始位置に自機を移動させる
     this.position.set(startX, startY);
+    // 登場開始位置を設定する
+    this.comingStartPosition = new Position(startX, startY);
     // 登場終了とする座標を設定する
     this.comingEndPosition = new Position(endX, endY);
+  }
+
+  /**
+   * キャラクターの状態を更新し描画を行う
+   * @param {*} viper
+   * @param {*} isComing
+   */
+
+  update() {
+    // 現時点のタイムスタンプを取得する
+    let justTime = Date.now();
+
+    // 登場シーンの処理
+    if (this.isComing) {
+      // 登場シーンが始まってからの開始時間
+      let comingTime = (justTime - this.comingStart) / 1000;
+      // 登場中は時間がたつほど上に向かて進む
+      let y = this.comingStartPosition.y - comingTime * 50;
+      // 一定の位置まで経過したら登場シーンを終了する
+      if (y <= this.comingEndPosition.y) {
+        this.isComing = false;
+        y = this.comingEndPosition.y; // 行き過ぎの可能性もあるので位置を再設定
+      }
+      // 求めたY座標を自機に設定する
+      this.position.set(this.position.x, y);
+      // justTimeを100で割ったときの余りが50より小さくなる場合だけ半透明にする(登場時に点滅させる)
+      if (justTime % 100 < 50) {
+        this.ctx.globalAlpha = 0.5;
+      }
+    }
+
+    // 自機キャラクターを描画する
+    this.draw();
+
+    // 念のためグローバルなアルファの状態を元に戻す
+    this.ctx.globalAlpha = 1.0;
   }
 }

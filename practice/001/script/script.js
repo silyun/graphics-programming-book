@@ -125,32 +125,7 @@
     // 現在までの経過時間を取得する
     // let nowTime = (Date.now() - startTime) / 1000;
 
-    // 登場シーンの処理
-    if (viper.isComing) {
-      // 登場シーンが始まってからの開始時間
-      let justTime = Date.now();
-      let comingTime = (justTime - viper.comingStart) / 1000;
-      // 登場中は時間がたつほど上に向かて進む
-      let y = CANVAS_HEIGHT - comingTime * 50;
-      // 一定の位置まで経過したら登場シーンを終了する
-      if (y <= viper.comingEndPosition.y) {
-        viper.isComing = false;
-        y = viper.comingEndPosition.y; // 行き過ぎの可能性もあるので位置を再設定
-      }
-      // 求めたY座標を自機に設定する
-      viper.position.set(viper.position.x, y);
-      // justTimeを100で割ったときの余りが50より小さくなる場合だけ半透明にする
-      if (justTime % 100 < 50) {
-        ctx.globalAlpha = 0.5;
-      }
-    }
-
-    // nowTimeをラジアンに見立ててsinに与えることで-1~1の往復する値を取得できる
-    // let s = Math.sin(nowTime);
-    // let x = s * 100;
-
-    // 自機キャラクターを描画する
-    viper.draw();
+    viper.update();
 
     // console.log(nowTime);
     requestAnimationFrame(render);
