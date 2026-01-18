@@ -48,9 +48,14 @@ class Character {
    * @param {number} w - 幅
    * @param {number} h - 高さ
    * @param {number} life - キャラクターのライフ（生存フラグを兼ねる）
-   * @param {Image} image - キャラクターの画像
+   * @param {string} imagePath - キャラクターの画像パス
    */
-  constructor(ctx, x, y, w, h, life, image) {
+  constructor(ctx, x, y, w, h, life, imagePath) {
+    /**
+     * @type {boolean}
+     */
+    this.ready = false;
+
     /**
      * @type {CanvasRenderingContext2D}
      */
@@ -69,7 +74,16 @@ class Character {
     /**
      * @type {Image}
      */
-    this.image = image;
+    // this.image = image;
+    this.image = new Image();
+    this.image.addEventListener(
+      'load',
+      () => {
+        this.ready = true;
+      },
+      false
+    );
+    this.image.src = imagePath;
 
     /**
      * @type {number}
