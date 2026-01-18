@@ -195,6 +195,12 @@ class Viper extends Character {
       if (window.isKeyDown.key_ArrowRight) this.position.x += this.speed; // アローキーの右
       if (window.isKeyDown.key_ArrowUp) this.position.y -= this.speed; // アローキーの上
       if (window.isKeyDown.key_ArrowDown) this.position.y += this.speed; // アローキーの下
+      // 移動後の位置が画面外に行ってしまうことを防ぐ
+      let canvasWidth = this.ctx.canvas.width;
+      let canvasHeight = this.ctx.canvas.height;
+      let tx = Math.min(Math.max(this.position.x, 0), canvasWidth);
+      let ty = Math.min(Math.max(this.position.y, 0), canvasHeight);
+      this.position.set(tx, ty);
     }
 
     // 自機キャラクターを描画する
