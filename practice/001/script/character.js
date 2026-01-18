@@ -141,6 +141,12 @@ class Viper extends Character {
      * @type {Position}
      */
     this.comingEndPosition = null;
+
+    /**
+     * 自身が持つショットインスタンスの配列
+     * @type {Array<Shot>}
+     */
+    this.shotArray = null;
   }
 
   /**
@@ -161,6 +167,14 @@ class Viper extends Character {
     this.comingStartPosition = new Position(startX, startY);
     // 登場終了とする座標を設定する
     this.comingEndPosition = new Position(endX, endY);
+  }
+
+  /**
+   * ショットを設定する
+   * @param {*} shotArray
+   */
+  setShotArray(shotArray) {
+    this.setShotArray = shotArray;
   }
 
   /**
@@ -191,6 +205,8 @@ class Viper extends Character {
         this.ctx.globalAlpha = 0.5;
       }
     } else {
+      // 機体の移動
+      // --------------------------------------------------
       if (window.isKeyDown.key_ArrowLeft) this.position.x -= this.speed; // アローキーの左
       if (window.isKeyDown.key_ArrowRight) this.position.x += this.speed; // アローキーの右
       if (window.isKeyDown.key_ArrowUp) this.position.y -= this.speed; // アローキーの上
@@ -201,6 +217,19 @@ class Viper extends Character {
       let tx = Math.min(Math.max(this.position.x, 0), canvasWidth);
       let ty = Math.min(Math.max(this.position.y, 0), canvasHeight);
       this.position.set(tx, ty);
+      // ショットの生成
+      // --------------------------------------------------
+      if (window.isKeyDown.key_z) {
+        // ショットの生存を確認して非生存のモノがあれば生成する
+        for (let i; i < this.shotArray.length; ++i) {
+          // 非生存かどうかを確認する
+          if (this.shotArray[i].life <= 0) {
+            this.shotArray[i].set(this.position.x, this.position.y);
+            // 1つ生成したらループを抜ける
+            break;
+          }
+        }
+      }
     }
 
     // 自機キャラクターを描画する
