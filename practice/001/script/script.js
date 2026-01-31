@@ -1,5 +1,14 @@
 (() => {
   /**
+   * キーの押下状態を調べるためのオブジェクト
+   * このオブジェクトはプロジェクトのどこからでも参照できるように
+   * window オブジェクトのカスタムプロパティとして設定する
+   * @global
+   * @type {object}
+   */
+  window.isKeyDown = {};
+
+  /**
    * canvas の幅
    * @type {number}
    */
@@ -16,18 +25,6 @@
    * @type {number}
    */
   const SHOT_MAX_COUNT = 10;
-
-  /**
-   * ショットのインスタンスを格納する配列
-   * @type {Array<Shot>}
-   */
-  let shotArray = [];
-
-  /**
-   * 自機キャラクターのインスタンス
-   * @type {Viper}
-   */
-  let viper = null;
 
   /**
    * Canvas2D API をラップしたユーティリティクラス
@@ -48,64 +45,22 @@
   let ctx = null;
 
   /**
-   * イメージのインスタンス
-   * @type {Image}
-   */
-  let image = null;
-
-  /**
    * 実行開始時のタイムスタンプ
    * @type {number}
    */
   let startTime = null;
 
   /**
-   * キーの押下状態を調べるためのオブジェクト
-   * @global
-   * @type {object}
+   * 自機キャラクターのインスタンス
+   * @type {Viper}
    */
-  window.isKeyDown = {};
+  let viper = null;
 
   /**
-   * イベントを設定する
+   * ショットのインスタンスを格納する配列
+   * @type {Array<Shot>}
    */
-  function eventSetting() {
-    window.addEventListener(
-      'keydown',
-      (event) => {
-        isKeyDown[`key_${event.key}`] = true;
-      },
-      false
-    );
-
-    window.addEventListener(
-      'keyup',
-      (event) => {
-        isKeyDown[`key_${event.key}`] = false;
-      },
-      false
-    );
-
-    // window.addEventListener('keydown', (event) => {
-    //   // 自機が登場シーン中なら何もしないで終了する
-    //   if (viper.isComing) return;
-    //   // 入力されたキーに応じて処理内容を変化させる
-    //   switch (event.key) {
-    //     case 'ArrowLeft':
-    //       viper.position.x -= 10;
-    //       break;
-    //     case 'ArrowRight':
-    //       viper.position.x += 10;
-    //       break;
-    //     case 'ArrowUp':
-    //       viper.position.y -= 10;
-    //       break;
-    //     case 'ArrowDown':
-    //       viper.position.y += 10;
-    //       break;
-    //   }
-    // });
-  }
+  let shotArray = [];
 
   /**
    * ページのロードが完了したときに発火する load イベント
@@ -120,23 +75,11 @@
       // ユーティリティクラスから 2d コンテキストを取得
       ctx = util.context;
 
-      // まず最初に画像の読み込みを開始する
-      util.imageLoader('./image/viper.png', (loadedImage) => {
-        // 引数経由で画像を受け取り変数に代入しておく
-        image = loadedImage;
-        // 初期化処理を行う
-        initialize();
-        // イベントの設定する
-        // eventSetting();
-        // 実行開始時のタイムスタンプを取得する
-        // startTime = Date.now();
-        // 描画処理を行う
-        // render();
+      initialize();
 
-        // 画像読み込み含め、初期化の準備完了をチェックしてからrenderを実行する
-        // MEMO: setTimeoutで再起呼び出ししているけど、Promise使ってもできそう（かつ制限時間を入れていないと画像が読み込まれなかった場合に無限ループで落ちそう）
-        loadCheck();
-      });
+      // 画像読み込み含め、初期化の準備完了をチェックしてからrenderを実行する
+      // MEMO: setTimeoutで再起呼び出ししているけど、Promise使ってもできそう（かつ制限時間を入れていないと画像が読み込まれなかった場合に無限ループで落ちそう）
+      loadCheck();
     },
     false
   );
@@ -178,6 +121,47 @@
     } else {
       setTimeout(loadCheck, 100);
     }
+  }
+
+  /**
+   * イベントを設定する
+   */
+  function eventSetting() {
+    window.addEventListener(
+      'keydown',
+      (event) => {
+        isKeyDown[`key_${event.key}`] = true;
+      },
+      false
+    );
+
+    window.addEventListener(
+      'keyup',
+      (event) => {
+        isKeyDown[`key_${event.key}`] = false;
+      },
+      false
+    );
+
+    // window.addEventListener('keydown', (event) => {
+    //   // 自機が登場シーン中なら何もしないで終了する
+    //   if (viper.isComing) return;
+    //   // 入力されたキーに応じて処理内容を変化させる
+    //   switch (event.key) {
+    //     case 'ArrowLeft':
+    //       viper.position.x -= 10;
+    //       break;
+    //     case 'ArrowRight':
+    //       viper.position.x += 10;
+    //       break;
+    //     case 'ArrowUp':
+    //       viper.position.y -= 10;
+    //       break;
+    //     case 'ArrowDown':
+    //       viper.position.y += 10;
+    //       break;
+    //   }
+    // });
   }
 
   /**
