@@ -12,6 +12,18 @@
   const CANVAS_HEIGHT = 480;
 
   /**
+   * ショットの最大個数
+   * @type {number}
+   */
+  const SHOT_MAX_COUNT = 10;
+
+  /**
+   * ショットのインスタンスを格納する配列
+   * @type {Array<Shot>}
+   */
+  let shotArray = [];
+
+  /**
    * 自機キャラクターのインスタンス
    * @type {Viper}
    */
@@ -115,11 +127,15 @@
         // 初期化処理を行う
         initialize();
         // イベントの設定する
-        eventSetting();
+        // eventSetting();
         // 実行開始時のタイムスタンプを取得する
-        startTime = Date.now();
+        // startTime = Date.now();
         // 描画処理を行う
-        render();
+        // render();
+
+        // 画像読み込み含め、初期化の準備完了をチェックしてからrenderを実行する
+        // MEMO: setTimeoutで再起呼び出ししているけど、Promise使ってもできそう（かつ制限時間を入れていないと画像が読み込まれなかった場合に無限ループで落ちそう）
+        loadCheck();
       });
     },
     false
@@ -132,9 +148,36 @@
     // canvas の大きさを設定
     canvas.width = CANVAS_WIDTH;
     canvas.height = CANVAS_HEIGHT;
+    // ショットを初期化する
+    for (let i = 0; i < SHOT_MAX_COUNT; ++i) {
+      shotArray[i] = new Shot(ctx, 0, 0, 32, 32, './image/viper_shot.png');
+    }
+    // console.log(shotArray);
+
     // 自機キャラクターを初期化する
-    viper = new Viper(ctx, 0, 0, 64, 64, image);
+    viper = new Viper(ctx, 0, 0, 64, 64, './image/viper.png');
     viper.setComing(CANVAS_WIDTH / 2, CANVAS_HEIGHT, CANVAS_WIDTH / 2, CANVAS_HEIGHT - 100);
+    viper.setShotArray(shotArray);
+  }
+
+  function loadCheck() {
+    // 準備完了を意味す真偽値
+    // MEMO: undefinedで初期化してもよさそうだけど、この後常にready &&で検証するため、あらかじめtrueをセットしている
+    let ready = true;
+    // 自機の状態を確認
+    ready = ready && viper.ready;
+    // ショットの状態を確認 MEMO: forEachのほうがいいのでは？
+    shotArray.map((v) => {
+      ready = ready && v.ready;
+    });
+
+    if (ready) {
+      eventSetting();
+      startTime = Date.now();
+      render();
+    } else {
+      setTimeout(loadCheck, 100);
+    }
   }
 
   /**
@@ -148,7 +191,13 @@
     // 現在までの経過時間を取得する
     // let nowTime = (Date.now() - startTime) / 1000;
 
+    // 自機を更新
     viper.update();
+
+    // ショットを更新
+    shotArray.map((v) => {
+      v.update();
+    });
 
     // console.log(nowTime);
     requestAnimationFrame(render);

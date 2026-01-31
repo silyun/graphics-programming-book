@@ -188,7 +188,7 @@ class Viper extends Character {
    * @param {*} shotArray
    */
   setShotArray(shotArray) {
-    this.setShotArray = shotArray;
+    this.shotArray = shotArray;
   }
 
   /**
