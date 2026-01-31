@@ -235,7 +235,7 @@ class Viper extends Character {
       // --------------------------------------------------
       if (window.isKeyDown.key_z) {
         // ショットの生存を確認して非生存のモノがあれば生成する
-        for (let i; i < this.shotArray.length; ++i) {
+        for (let i = 0; i < this.shotArray.length; ++i) {
           // 非生存かどうかを確認する
           if (this.shotArray[i].life <= 0) {
             this.shotArray[i].set(this.position.x, this.position.y);
