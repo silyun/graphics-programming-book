@@ -289,13 +289,32 @@ class Shot extends Character {
    */
   constructor(ctx, x, y, w, h, imagePath) {
     super(ctx, x, y, w, h, 0, imagePath);
+    /**
+     * 自身の移動スピード（update 1回あたりの移動量）
+     * @type {number}
+     */
     this.speed = 7;
+
+    /**
+     * ショットの進行方向（MEMO: 初期値はその場所で上向きの進行方向（y=-1）を示している）
+     * @type {number}
+     */
+    this.vector = new Position(0.4, -1.0);
   }
 
   set(x, y) {
     this.position.set(x, y);
     // 生存状態の1を設定
     this.life = 1;
+  }
+
+  /**
+   * ショットの進行方向を設定する
+   * @param {number} x
+   * @param {number} y
+   */
+  setVector(x, y) {
+    this.vector.set(x, y);
   }
 
   update() {
@@ -306,7 +325,11 @@ class Shot extends Character {
       this.life = 0;
     }
     // ショットを上に向かって移動させる
-    this.position.y -= this.speed;
+    // this.position.y -= this.speed;
+
+    // ショットを進行方向に向かって移動させる
+    this.position.x += this.vector.x * this.speed;
+    this.position.y += this.vector.y * this.speed;
     // ショットを描画する
     this.draw();
   }
