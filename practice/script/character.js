@@ -81,7 +81,7 @@ class Character {
       () => {
         this.ready = true;
       },
-      false
+      false,
     );
     this.image.src = imagePath;
 
@@ -161,6 +161,18 @@ class Viper extends Character {
      * @type {Array<Shot>}
      */
     this.shotArray = null;
+
+    /**
+     * ショット用のカウンター
+     * @type {number}
+     */
+    this.shotCheckCounter = 0;
+
+    /**
+     * ショットを撃つことができる感覚
+     * @type {number}
+     */
+    this.shotInterval = 10;
   }
 
   /**
@@ -235,16 +247,24 @@ class Viper extends Character {
       // --------------------------------------------------
       if (window.isKeyDown.key_z) {
         // ショットの生存を確認して非生存のモノがあれば生成する
-        for (let i = 0; i < this.shotArray.length; ++i) {
-          // 非生存かどうかを確認する
-          if (this.shotArray[i].life <= 0) {
-            this.shotArray[i].set(this.position.x, this.position.y);
-            // 1つ生成したらループを抜ける
-            break;
+        if (this.shotCheckCounter >= 0) {
+          for (let i = 0; i < this.shotArray.length; ++i) {
+            // 非生存かどうかを確認する
+            if (this.shotArray[i].life <= 0) {
+              // 自機キャラクターの座標にショットを生成
+              this.shotArray[i].set(this.position.x, this.position.y);
+              // ショットカウンターをリセット
+              this.shotCheckCounter = -this.shotInterval;
+              // 1つ生成したらループを抜ける
+              break;
+            }
           }
         }
       }
     }
+
+    // ショットカウンターをインクリメント（毎フレーム）
+    ++this.shotCheckCounter;
 
     // 自機キャラクターを描画する
     this.draw();
