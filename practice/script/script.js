@@ -63,6 +63,12 @@
   let shotArray = [];
 
   /**
+   * シングルショットのインスタンスを格納する配列
+   * @type {Array<Shot>}
+   */
+  let singleShotArray = [];
+
+  /**
    * ページのロードが完了したときに発火する load イベント
    */
   window.addEventListener(
@@ -81,7 +87,7 @@
       // MEMO: setTimeoutで再起呼び出ししているけど、Promise使ってもできそう（かつ制限時間を入れていないと画像が読み込まれなかった場合に無限ループで落ちそう）
       loadCheck();
     },
-    false
+    false,
   );
 
   /**
@@ -94,13 +100,15 @@
     // ショットを初期化する
     for (let i = 0; i < SHOT_MAX_COUNT; ++i) {
       shotArray[i] = new Shot(ctx, 0, 0, 32, 32, './image/viper_shot.png');
+      singleShotArray[i * 2] = new Shot(ctx, 0, 0, 32, 32, './image/viper_single_shot.png');
+      singleShotArray[i * 2 + 1] = new Shot(ctx, 0, 0, 32, 32, './image/viper_single_shot.png');
     }
     // console.log(shotArray);
 
     // 自機キャラクターを初期化する
     viper = new Viper(ctx, 0, 0, 64, 64, './image/viper.png');
     viper.setComing(CANVAS_WIDTH / 2, CANVAS_HEIGHT, CANVAS_WIDTH / 2, CANVAS_HEIGHT - 100);
-    viper.setShotArray(shotArray);
+    viper.setShotArray(shotArray, singleShotArray);
   }
 
   function loadCheck() {
@@ -111,6 +119,10 @@
     ready = ready && viper.ready;
     // ショットの状態を確認 MEMO: forEachのほうがいいのでは？
     shotArray.map((v) => {
+      ready = ready && v.ready;
+    });
+    // シングルショットの状態を確認 MEMO: forEachのほうがいいのでは？
+    singleShotArray.map((v) => {
       ready = ready && v.ready;
     });
 
@@ -132,7 +144,7 @@
       (event) => {
         isKeyDown[`key_${event.key}`] = true;
       },
-      false
+      false,
     );
 
     window.addEventListener(
@@ -140,7 +152,7 @@
       (event) => {
         isKeyDown[`key_${event.key}`] = false;
       },
-      false
+      false,
     );
 
     // window.addEventListener('keydown', (event) => {
@@ -180,6 +192,11 @@
 
     // ショットを更新
     shotArray.map((v) => {
+      v.update();
+    });
+
+    // シングルショットを更新
+    singleShotArray.map((v) => {
       v.update();
     });
 

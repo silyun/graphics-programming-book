@@ -163,6 +163,12 @@ class Viper extends Character {
     this.shotArray = null;
 
     /**
+     * 自身が持つシングルショットインスタンスの配列
+     * @type {Array<Shot>}
+     */
+    this.singleShotArray = null;
+
+    /**
      * ショット用のカウンター
      * @type {number}
      */
@@ -197,10 +203,12 @@ class Viper extends Character {
 
   /**
    * ショットを設定する
-   * @param {*} shotArray
+   * @param {Array<Shot>} shotArray
+   * @param {Array<Shot>} singleShotArray
    */
-  setShotArray(shotArray) {
+  setShotArray(shotArray, singleShotArray) {
     this.shotArray = shotArray;
+    this.singleShotArray = singleShotArray;
   }
 
   /**
@@ -259,6 +267,22 @@ class Viper extends Character {
               break;
             }
           }
+          // i+=2で2個同時に生成する
+          for (let i = 0; i < this.singleShotArray.length; i += 2) {
+            // 非生存かどうかを確認する
+            if (this.singleShotArray[i].life <= 0 && this.singleShotArray[i + 1].life <= 0) {
+              // 自機キャラクターの座標にショットを生成
+              this.singleShotArray[i].set(this.position.x, this.position.y);
+              this.singleShotArray[i].setVector(0.2, -0.9);
+              this.singleShotArray[i + 1].set(this.position.x, this.position.y);
+              this.singleShotArray[i + 1].setVector(-0.2, -0.9);
+
+              // ショットカウンターをリセット
+              this.shotCheckCounter = -this.shotInterval;
+              // 1つ生成したらループを抜ける
+              break;
+            }
+          }
         }
       }
     }
@@ -299,7 +323,7 @@ class Shot extends Character {
      * ショットの進行方向（MEMO: 初期値はその場所で上向きの進行方向（y=-1）を示している）
      * @type {number}
      */
-    this.vector = new Position(0.4, -1.0);
+    this.vector = new Position(0.0, -1.0);
   }
 
   set(x, y) {
